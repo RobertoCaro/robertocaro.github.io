@@ -18,11 +18,10 @@
       <option value="fractions">Fractions</option>
     </select>
 
-    <button id="generate-btn">Generate Exercise</button>
-    <p id="exercise"></p>
-    <input type="text" id="answer" placeholder="Your answer" />
-    <button id="check-btn">Check Answer</button>
-    <p id="result"></p>
+    <button id="generate-btn">Generate Exercises</button>
+    <div id="exercises"></div>
+    <button id="check-btn">Check Answers</button>
+    <div id="results"></div>
   </div>
 
   <script>
@@ -32,83 +31,99 @@
 
     const generateBtn = document.getElementById('generate-btn');
     const checkBtn = document.getElementById('check-btn');
-    const exerciseElement = document.getElementById('exercise');
-    const answerElement = document.getElementById('answer');
-    const resultElement = document.getElementById('result');
+    const exercisesContainer = document.getElementById('exercises');
+    const resultsContainer = document.getElementById('results');
     const exerciseType = document.getElementById('exercise-type');
 
-    let correctAnswer = 0;
+    let correctAnswers = [];
 
     generateBtn.addEventListener('click', () => {
       const type = exerciseType.value;
+      exercisesContainer.innerHTML = '';
+      correctAnswers = [];
 
-      switch (type) {
-        case 'addition':
-          generateAddition();
-          break;
-        case 'algebra':
-          generateAlgebra();
-          break;
-        case 'quadratic':
-          generateQuadratic();
-          break;
-        case 'fractions':
-          generateFractions();
-          break;
+      for (let i = 0; i < 10; i++) {
+        switch (type) {
+          case 'addition':
+            generateAddition(i);
+            break;
+          case 'algebra':
+            generateAlgebra(i);
+            break;
+          case 'quadratic':
+            generateQuadratic(i);
+            break;
+          case 'fractions':
+            generateFractions(i);
+            break;
+        }
       }
     });
 
     checkBtn.addEventListener('click', () => {
-      const userAnswer = parseFloat(answerElement.value);
-      if (userAnswer === correctAnswer) {
-        resultElement.textContent = '✅ Correct!';
-      } else {
-        resultElement.textContent = `❌ Incorrect. The answer is ${correctAnswer}`;
+      resultsContainer.innerHTML = '';
+      for (let i = 0; i < 10; i++) {
+        const userAnswer = parseFloat(document.getElementById(`answer-${i}`).value);
+        const result = document.createElement('p');
+        if (userAnswer === correctAnswers[i]) {
+          result.textContent = `Exercise ${i + 1}: ✅ Correct!`;
+        } else {
+          result.textContent = `Exercise ${i + 1}: ❌ Incorrect. The answer is ${correctAnswers[i]}`;
+        }
+        resultsContainer.appendChild(result);
       }
     });
 
-    function generateAddition() {
-      const num1 = Math.floor(Math.random() * 21) - 10; // Include negative and positive numbers
+    function generateAddition(index) {
+      const num1 = Math.floor(Math.random() * 21) - 10;
       const num2 = Math.floor(Math.random() * 21) - 10;
-      correctAnswer = num1 + num2;
-      exerciseElement.textContent = `${num1} + ${num2} = ?`;
+      correctAnswers[index] = num1 + num2;
+      displayExercise(index, `${num1} + ${num2} = ?`);
     }
 
-    function generateAlgebra() {
+    function generateAlgebra(index) {
       const x = Math.floor(Math.random() * 10) + 1;
       const y = Math.floor(Math.random() * 10) + 1;
-      correctAnswer = y;
-      exerciseElement.textContent = `${x}x = ${x * y}, x = ?`;
+      correctAnswers[index] = y;
+      displayExercise(index, `${x}x = ${x * y}, x = ?`);
     }
 
-    function generateQuadratic() {
+    function generateQuadratic(index) {
       const a = Math.floor(Math.random() * 5) + 1;
       const b = Math.floor(Math.random() * 10) - 5;
       const c = Math.floor(Math.random() * 10) - 5;
 
       const discriminant = b * b - 4 * a * c;
       if (discriminant < 0) {
-        generateQuadratic(); // Avoid complex solutions
+        generateQuadratic(index);
         return;
       }
 
       const root1 = (-b + Math.sqrt(discriminant)) / (2 * a);
       const root2 = (-b - Math.sqrt(discriminant)) / (2 * a);
 
-      correctAnswer = `${Math.min(root1, root2)}, ${Math.max(root1, root2)}`;
+      correctAnswers[index] = `${Math.min(root1, root2)}, ${Math.max(root1, root2)}`;
 
-      // Shuffle terms
       const terms = [`${a}x²`, `${b}x`, `${c}`];
       terms.sort(() => Math.random() - 0.5);
 
-      exerciseElement.textContent = `${terms.join(' + ')} = 0, x = ?`;
+      displayExercise(index, `${terms.join(' + ')} = 0, x = ?`);
     }
 
-    function generateFractions() {
+    function generateFractions(index) {
       const numerator = Math.floor(Math.random() * 10) + 1;
       const denominator = Math.floor(Math.random() * 9) + 1;
-      correctAnswer = numerator / denominator;
-      exerciseElement.textContent = `${numerator}/${denominator} = ? (Decimal format)`;
+      correctAnswers[index] = numerator / denominator;
+      displayExercise(index, `${numerator}/${denominator} = ? (Decimal format)`);
+    }
+
+    function displayExercise(index, text) {
+      const exercise = document.createElement('div');
+      exercise.innerHTML = `
+        <p>${index + 1}. ${text}</p>
+        <input type="text" id="answer-${index}" placeholder="Your answer" />
+      `;
+      exercisesContainer.appendChild(exercise);
     }
   </script>
 </body>
