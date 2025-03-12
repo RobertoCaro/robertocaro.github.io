@@ -13,8 +13,8 @@
 
     <select id="exercise-type">
       <option value="addition">Addition</option>
-      <option value="algebra">Algebra</option>
-      <option value="natural-numbers">Natural Numbers</option>
+      <option value="algebra">Algebra (1st degree)</option>
+      <option value="quadratic">Algebra (2nd degree)</option>
       <option value="fractions">Fractions</option>
     </select>
 
@@ -49,8 +49,8 @@
         case 'algebra':
           generateAlgebra();
           break;
-        case 'natural-numbers':
-          generateNaturalNumbers();
+        case 'quadratic':
+          generateQuadratic();
           break;
         case 'fractions':
           generateFractions();
@@ -68,8 +68,8 @@
     });
 
     function generateAddition() {
-      const num1 = Math.floor(Math.random() * 10) + 1;
-      const num2 = Math.floor(Math.random() * 10) + 1;
+      const num1 = Math.floor(Math.random() * 21) - 10; // Include negative and positive numbers
+      const num2 = Math.floor(Math.random() * 21) - 10;
       correctAnswer = num1 + num2;
       exerciseElement.textContent = `${num1} + ${num2} = ?`;
     }
@@ -81,10 +81,27 @@
       exerciseElement.textContent = `${x}x = ${x * y}, x = ?`;
     }
 
-    function generateNaturalNumbers() {
-      const num1 = Math.floor(Math.random() * 100) + 1;
-      correctAnswer = num1;
-      exerciseElement.textContent = `Is ${num1} a natural number? (1 = Yes, 0 = No)`;
+    function generateQuadratic() {
+      const a = Math.floor(Math.random() * 5) + 1;
+      const b = Math.floor(Math.random() * 10) - 5;
+      const c = Math.floor(Math.random() * 10) - 5;
+
+      const discriminant = b * b - 4 * a * c;
+      if (discriminant < 0) {
+        generateQuadratic(); // Avoid complex solutions
+        return;
+      }
+
+      const root1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+      const root2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+
+      correctAnswer = `${Math.min(root1, root2)}, ${Math.max(root1, root2)}`;
+
+      // Shuffle terms
+      const terms = [`${a}x²`, `${b}x`, `${c}`];
+      terms.sort(() => Math.random() - 0.5);
+
+      exerciseElement.textContent = `${terms.join(' + ')} = 0, x = ?`;
     }
 
     function generateFractions() {
@@ -97,30 +114,30 @@
 </body>
 </html>
 
-<!-- styles.css -->
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f4;
-  }
-  .container {
-    text-align: center;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-  button, select {
-    margin: 10px;
-    padding: 10px 20px;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-</style>
+/* styles.css */
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+.container {
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+button, select {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* manifest.json y service-worker.js deben estar como archivos externos y no dentro del HTML */
