@@ -1,21 +1,122 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ejercicios Matemáticos</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Exercises PWA</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
 </head>
 <body>
-    <div class="container">
-        <h1>Generador de Ejercicios Matemáticos</h1>
-        <button onclick="generarEjercicio()">Generar Ejercicio</button>
-        <p id="ejercicio"></p>
-        <input type="number" id="respuesta" placeholder="Tu respuesta" />
-        <button onclick="verificarRespuesta()">Verificar</button>
-        <p id="resultado"></p>
-    </div>
+  <div class="container">
+    <h1>Math Exercises</h1>
+    <button id="generate-btn">Generate Exercise</button>
+    <p id="exercise"></p>
+    <input type="number" id="answer" placeholder="Your answer" />
+    <button id="check-btn">Check Answer</button>
+    <p id="result"></p>
+  </div>
 
-    <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+
+    const generateBtn = document.getElementById('generate-btn');
+    const checkBtn = document.getElementById('check-btn');
+    const exerciseElement = document.getElementById('exercise');
+    const answerElement = document.getElementById('answer');
+    const resultElement = document.getElementById('result');
+
+    let correctAnswer = 0;
+
+    generateBtn.addEventListener('click', () => {
+      const num1 = Math.floor(Math.random() * 10) + 1;
+      const num2 = Math.floor(Math.random() * 10) + 1;
+      correctAnswer = num1 + num2;
+      exerciseElement.textContent = `${num1} + ${num2} = ?`;
+      resultElement.textContent = '';
+      answerElement.value = '';
+    });
+
+    checkBtn.addEventListener('click', () => {
+      const userAnswer = parseInt(answerElement.value);
+      if (userAnswer === correctAnswer) {
+        resultElement.textContent = '✅ Correct!';
+      } else {
+        resultElement.textContent = `❌ Incorrect. The answer is ${correctAnswer}`;
+      }
+    });
+  </script>
 </body>
 </html>
+
+<!-- styles.css -->
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+  }
+  .container {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  button {
+    margin: 10px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
+
+<!-- manifest.json -->
+{
+  "name": "Math Exercises PWA",
+  "short_name": "Math PWA",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+
+<!-- service-worker.js -->
+const CACHE_NAME = 'math-pwa-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/styles.css',
+  '/manifest.json'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(urlsToCache);
+    })
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});
