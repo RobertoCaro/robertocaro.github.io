@@ -10,9 +10,17 @@
 <body>
   <div class="container">
     <h1>Math Exercises</h1>
+
+    <select id="exercise-type">
+      <option value="addition">Addition</option>
+      <option value="algebra">Algebra</option>
+      <option value="natural-numbers">Natural Numbers</option>
+      <option value="fractions">Fractions</option>
+    </select>
+
     <button id="generate-btn">Generate Exercise</button>
     <p id="exercise"></p>
-    <input type="number" id="answer" placeholder="Your answer" />
+    <input type="text" id="answer" placeholder="Your answer" />
     <button id="check-btn">Check Answer</button>
     <p id="result"></p>
   </div>
@@ -27,26 +35,64 @@
     const exerciseElement = document.getElementById('exercise');
     const answerElement = document.getElementById('answer');
     const resultElement = document.getElementById('result');
+    const exerciseType = document.getElementById('exercise-type');
 
     let correctAnswer = 0;
 
     generateBtn.addEventListener('click', () => {
-      const num1 = Math.floor(Math.random() * 10) + 1;
-      const num2 = Math.floor(Math.random() * 10) + 1;
-      correctAnswer = num1 + num2;
-      exerciseElement.textContent = `${num1} + ${num2} = ?`;
-      resultElement.textContent = '';
-      answerElement.value = '';
+      const type = exerciseType.value;
+
+      switch (type) {
+        case 'addition':
+          generateAddition();
+          break;
+        case 'algebra':
+          generateAlgebra();
+          break;
+        case 'natural-numbers':
+          generateNaturalNumbers();
+          break;
+        case 'fractions':
+          generateFractions();
+          break;
+      }
     });
 
     checkBtn.addEventListener('click', () => {
-      const userAnswer = parseInt(answerElement.value);
+      const userAnswer = parseFloat(answerElement.value);
       if (userAnswer === correctAnswer) {
         resultElement.textContent = '✅ Correct!';
       } else {
         resultElement.textContent = `❌ Incorrect. The answer is ${correctAnswer}`;
       }
     });
+
+    function generateAddition() {
+      const num1 = Math.floor(Math.random() * 10) + 1;
+      const num2 = Math.floor(Math.random() * 10) + 1;
+      correctAnswer = num1 + num2;
+      exerciseElement.textContent = `${num1} + ${num2} = ?`;
+    }
+
+    function generateAlgebra() {
+      const x = Math.floor(Math.random() * 10) + 1;
+      const y = Math.floor(Math.random() * 10) + 1;
+      correctAnswer = y;
+      exerciseElement.textContent = `${x}x = ${x * y}, x = ?`;
+    }
+
+    function generateNaturalNumbers() {
+      const num1 = Math.floor(Math.random() * 100) + 1;
+      correctAnswer = num1;
+      exerciseElement.textContent = `Is ${num1} a natural number? (1 = Yes, 0 = No)`;
+    }
+
+    function generateFractions() {
+      const numerator = Math.floor(Math.random() * 10) + 1;
+      const denominator = Math.floor(Math.random() * 9) + 1;
+      correctAnswer = numerator / denominator;
+      exerciseElement.textContent = `${numerator}/${denominator} = ? (Decimal format)`;
+    }
   </script>
 </body>
 </html>
@@ -68,7 +114,7 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
-  button {
+  button, select {
     margin: 10px;
     padding: 10px 20px;
     border: none;
